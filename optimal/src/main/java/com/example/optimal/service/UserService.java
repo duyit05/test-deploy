@@ -59,4 +59,8 @@ public class UserService {
                 .items(responses)
                 .build();
     }
+
+    public User createUser (User user){
+        return userRepository.save(user);
+    }
 }

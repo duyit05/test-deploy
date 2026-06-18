@@ -2,13 +2,11 @@ package com.example.optimal.controller;
 
 import com.example.optimal.dto.ApiResponse;
 import com.example.optimal.dto.PageResponse;
+import com.example.optimal.model.User;
 import com.example.optimal.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/users")
 @RestController
@@ -25,6 +23,15 @@ public class UserController {
                 .code(HttpStatus.OK.value())
                 .message("Get users")
                 .data(userService.getUsers(pageNo,pageSize,keyword,sorts))
+                .build();
+    }
+
+    @PostMapping
+    public ApiResponse<?> createUser (@RequestBody User user){
+        return ApiResponse.builder()
+                .code(HttpStatus.CREATED.value())
+                .message("Create user")
+                .data(userService.createUser(user))
                 .build();
     }
 
