@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: optimal-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123123za
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - optimal-network
+    # Kiểm tra postgres đã sẵn sàng chưa trước khi app kết nối
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: optimal-container
+    ports:
+      - "8080:8080"
+    environment:
+      # Ghi đè thẳng URL, không cần profile hay file yml mới
+      SPRING_DATASOURCE_URL: jdbc:postgresql://optimal-db:5432/test
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - optimal-network
+
+networks:
+  optimal-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
